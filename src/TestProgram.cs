@@ -1,4 +1,4 @@
-using Chaotx.Collexions;
+using Chaotx.Collections;
 
 using System;
 
