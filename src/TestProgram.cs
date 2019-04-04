@@ -4,8 +4,7 @@ using System;
 
 public class TestProgram {
     public static void Main(string[] args) {
-        BinaryTree<int> bt = new BinaryTree<int>();
-        bt.Add(8);
+        BinaryTree<int> bt = new BinaryTree<int>(8);
         bt.Add(5);
         bt.Add(10);
         bt.Add(4);
