@@ -13,14 +13,31 @@ namespace Chaotx.Collections.Trees {
         public int Depth {get; protected set;}
         public T Value {get; protected set;}
 
+        private List<int> maxLevelHeight = new List<int>();
+        public List<int> MaxLevelHeight {
+            get {return ParentTree == null
+                ? maxLevelHeight
+                : ParentTree.MaxLevelHeight;}
+            protected set {maxLevelHeight = value;}
+        }
+
         public abstract void Add(T value);
         public abstract void Remove(T value);
+
+        public Tree(params T[] values) {
+            Add(values);
+        }
+
+        public void Add(params T[] values) {
+            foreach(var value in values)
+                Add(value);
+        }
 
         public override string ToString() {
             T?[][] field = ToField();
             StringBuilder sb = new StringBuilder();
 
-            int p = 3, m = 0;
+            int m = 0;
             string s;
 
             for(int x, y = 0; y < field.Length; ++y) {
@@ -49,18 +66,21 @@ namespace Chaotx.Collections.Trees {
 
         protected T?[][] ToField() {
             T?[][] field = new T?[Height][];
+            int width = (int)Math.Pow(2, Height-1)*2 - 1;
+
             for(int h = 0; h < Height; ++h)
-                field[h] = new T?[(int)Math.Pow(2, Height-1)*2 - 1];
+                field[h] = new T?[width];
 
             FillField(this, field, field[0].Length/2);
             return field;
         }
 
-        private void FillField(Tree<T> tree, T?[][] field, int i) {
+        private static void FillField(Tree<T> tree, T?[][] field, int i) {
             if(tree == null) return;
             field[tree.Depth][i] = tree.Value;
-            FillField(tree.LeftTree, field, i - (int)Math.Pow(2, tree.Height-2));
-            FillField(tree.RightTree, field, i + (int)Math.Pow(2, tree.Height-2));
+            int height = tree.MaxLevelHeight[tree.Depth];
+            FillField(tree.LeftTree, field, i - (int)Math.Pow(2, height-2));
+            FillField(tree.RightTree, field, i + (int)Math.Pow(2, height-2));
         }
 
         protected void Traverse(Tree<T> tree, TreeAction action, int left, int right) {
@@ -70,13 +90,8 @@ namespace Chaotx.Collections.Trees {
             Traverse(tree.RightTree, action, left, right+1);
         }
 
-        internal void _IncHeight(Tree<T> origin) {
-            if(origin.Depth >= Height) {
-                ++Height;
-
-                if(ParentTree != null)
-                    ParentTree._IncHeight(origin);
-            }
+        internal void _IncHeight() {
+            ++Height;
         }
     }
 }
