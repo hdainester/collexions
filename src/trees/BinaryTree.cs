@@ -3,42 +3,52 @@ using System.Text;
 using System;
 
 namespace Chaotx.Collections.Trees {
-    public class BinaryTree<T> : Tree<T> where T : struct, System.IComparable<T> {
-        internal BinaryTree<T> Left {get; set;}
-        internal BinaryTree<T> Right {get; set;}
+    using Nodes;
 
-        public BinaryTree() : this(null) {}
-        internal BinaryTree(BinaryTreeNode<T> rootNode) {
-            Node = rootNode;
-            Height = 1;
+    public class BinaryTree<T> : Tree<T, BinaryTree<T>, BinaryTreeNode<T>>
+    where T : struct, System.IComparable<T> {
+        public static readonly BinaryTree<T> EmptyTree = new BinaryTree<T>();
+
+        private BinaryTreeNode<T> node;
+        internal override BinaryTreeNode<T> Node {
+            get => node;
+            set => node = value;
         }
 
+        public BinaryTree(params T[] values) : base(values) {}
+
         public override void Add(T value) {
+            BinaryTreeNode<T> newNode = null;
+            Add(value, ref newNode);
+        }
+
+        internal void Add(T value, ref BinaryTreeNode<T> newNode) {
             if(Node == null) {
-                Node = new BinaryTreeNode<T>(value);
+                new BinaryTreeNode<T>(value, this);
+                newNode = node;
                 Height = 1;
                 return;
             }
 
             int res = value.CompareTo(Node.Value);
-            if(res > 0 && Right == null || res < 1 && Left == null) {
-                BinaryTree<T> newTree = new BinaryTree<T>(new BinaryTreeNode<T>(value));
-                newTree.Node.Depth = Node.Depth+1;
-                newTree.Parent = this;
+            if(res > 0 && Node.Right == null || res < 1 && Node.Left == null) {
+                newNode = new BinaryTreeNode<T>(value);
+                newNode.Parent = Node;
 
-                if(Left == null && Right == null) {
-                    Tree<T> tree = this;
-                    while(tree != null && (newTree.Node.Depth - tree.Node.Depth) >= tree.Height) {
-                        ++tree.Height;
-                        tree = tree.Parent;
+                if(Node.Left == null && Node.Right == null) {
+                    // update height of ancestors
+                    BinaryTreeNode<T> ancestor = Node;
+                    while(ancestor != null && (newNode.Depth - ancestor.Depth) >= ancestor.Tree.Height) {
+                        ++ancestor.Tree.Height;
+                        ancestor = ancestor.Parent;
                     }
                 }
 
-                if(res > 0) Right = newTree;
-                else Left = newTree;
+                if(res > 0) Node.Right = newNode;
+                else Node.Left = newNode; // TODO (for no duplicate values will travers to the left)
             } else {
-                if(res > 0) Right.Add(value);
-                else Left.Add(value);
+                if(res > 0) Node.Right.Tree.Add(value, ref newNode);
+                else Node.Left.Tree.Add(value, ref newNode); // TODO (for no duplicate values will travers to the left)
             }
         }
 
@@ -77,6 +87,7 @@ namespace Chaotx.Collections.Trees {
         }
 
         internal static T?[][] ToField(BinaryTree<T> tree) {
+            while(tree.Node.Parent != null) tree = tree.Node.Parent.Tree;
             T?[][] field = new T?[tree.Height][];
             int width = (int)Math.Pow(2, tree.Height-1)*2 - 1;
 
@@ -88,26 +99,26 @@ namespace Chaotx.Collections.Trees {
         }
 
         private static void FillField(BinaryTree<T> tree, T?[][] field, int i) {
-            FillField(tree, tree, field, i);
+            FillField(tree.Node, tree.Node, field, i);
         }
 
-        private static void FillField(BinaryTree<T> root, BinaryTree<T> tree, T?[][] field, int i) {
-            if(tree == null) return;
-            field[tree.Node.Depth][i] = tree.Node.Value;
-            int height = GetMaxLevelHeight(root, tree.Node.Depth);
-            FillField(root, tree.Left, field, i - (int)Math.Pow(2, height-2));
-            FillField(root, tree.Right, field, i + (int)Math.Pow(2, height-2));
+        private static void FillField(BinaryTreeNode<T> rootNode, BinaryTreeNode<T> node, T?[][] field, int i) {
+            if(node == null) return;
+            field[node.Depth][i] = node.Value;
+            int height = GetMaxLevelHeight(rootNode, node.Depth);
+            FillField(rootNode, node.Left, field, i - (int)Math.Pow(2, height-2));
+            FillField(rootNode, node.Right, field, i + (int)Math.Pow(2, height-2));
         }
 
-        private static int GetMaxLevelHeight(BinaryTree<T> tree, int level) {
-            if(tree == null) return 0;
+        private static int GetMaxLevelHeight(BinaryTreeNode<T> node, int level) {
+            if(node == null) return 0;
             int maxHeightL = 0;
             int maxHeightR = 0;
 
-            if(tree.Node.Depth < level) {
-                maxHeightL = GetMaxLevelHeight(tree.Left, level);
-                maxHeightR = GetMaxLevelHeight(tree.Right, level);
-            } else return tree.Height;
+            if(node.Depth < level) {
+                maxHeightL = GetMaxLevelHeight(node.Left, level);
+                maxHeightR = GetMaxLevelHeight(node.Right, level);
+            } else return node.Tree.Height;
 
             return Math.Max(maxHeightL, maxHeightR);
         }

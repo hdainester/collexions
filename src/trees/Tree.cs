@@ -3,26 +3,40 @@ using System.Text;
 using System;
 
 namespace Chaotx.Collections.Trees {
-    public abstract class Tree<T> where T : struct, System.IComparable<T> {
-        internal Tree<T> Parent {get; set;}
-        internal TreeNode<T> Node {get; set;}
+    using Nodes;
 
+    public abstract class Tree<ValueType, TreeType, NodeType>
+        where ValueType : struct, System.IComparable<ValueType>
+        where TreeType : Tree<ValueType, TreeType, NodeType>
+        where NodeType : TreeNode<ValueType, TreeType, NodeType>
+    {
+        internal abstract NodeType Node {get; set;}
         public int Height {get; internal set;}
 
-        public abstract void Add(T value);
-        public abstract void Remove(T value);
-        public abstract bool Contains(T value);
+        public abstract void Add(ValueType value);
+        public abstract void Remove(ValueType value);
+        public abstract bool Contains(ValueType value);
 
-        public Tree(params T[] values) {
+        public Tree(params ValueType[] values) {
             Add(values);
         }
 
-        public void Add(params T[] values) {
-            foreach(var value in values)
-                Add(value);
+        public void Add(params ValueType[] values) {
+            // TODO: this is a temporary workaround to prevent
+            // AVL-Trees from adding values into subtrees after
+            // the Tree referenced by 'this' has been rotated
+            // into lower levels
+            int initDepth = Node == null ? 0 : Node.Depth;
+            Tree<ValueType, TreeType, NodeType> tree = this;
+
+            foreach(var value in values) {
+                tree.Add(value);
+                while(tree.Node.Depth > initDepth)
+                    tree = tree.Node.Parent.Tree;
+            }
         }
 
-        public void Remove(params T[] values) {
+        public void Remove(params ValueType[] values) {
             foreach(var value in values)
                 Remove(value);
         }
