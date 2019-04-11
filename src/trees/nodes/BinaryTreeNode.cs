@@ -5,10 +5,12 @@ namespace Chaotx.Collections.Trees.Nodes {
         public BinaryTreeNode<T> Right {get; set;}        
         public override int Depth => Parent == null ? 0 : Parent.Depth+1;
         public override BinaryTree<T> Tree {
-            get => base.Tree != null ? base.Tree : BinaryTree<T>.EmptyTree;
+            // get => base.Tree != null ? base.Tree : BinaryTree<T>.EmptyTree;
+            get => base.Tree != null ? base.Tree : (base.Tree = new BinaryTree<T>());
             set => base.Tree = value;
         }
 
+        internal BinaryTreeNode() : this(default(T), null) {}
         internal BinaryTreeNode(T value) : this(value, new BinaryTree<T>(value)) {}
         internal BinaryTreeNode(T value, BinaryTree<T> tree) : base(value, tree) {}
     }

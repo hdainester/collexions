@@ -18,22 +18,27 @@ namespace Chaotx.Collections.Trees {
         public BinaryTree(params T[] values) : base(values) {}
 
         public override void Add(T value) {
-            BinaryTreeNode<T> newNode = null;
-            Add(value, ref newNode);
+            // BinaryTreeNode<T> newNode = null;
+            Add(value, new BinaryTreeNode<T>());
         }
 
-        internal void Add(T value, ref BinaryTreeNode<T> newNode) {
+        internal void Add(T value, BinaryTreeNode<T> newNode) {
             if(Node == null) {
-                new BinaryTreeNode<T>(value, this);
-                newNode = node;
+                // new BinaryTreeNode<T>(value, this);
+                newNode.Value = value;
+                newNode.Tree = this;
+                Node = newNode;
+                // newNode = node;
                 Height = 1;
                 return;
             }
 
             int res = value.CompareTo(Node.Value);
             if(res > 0 && Node.Right == null || res < 1 && Node.Left == null) {
-                newNode = new BinaryTreeNode<T>(value);
+                // newNode = new BinaryTreeNode<T>(value);
+                newNode.Value = value;
                 newNode.Parent = Node;
+                newNode.Tree.Height = 1;
 
                 if(Node.Left == null && Node.Right == null) {
                     // update height of ancestors
@@ -45,10 +50,10 @@ namespace Chaotx.Collections.Trees {
                 }
 
                 if(res > 0) Node.Right = newNode;
-                else Node.Left = newNode; // TODO (for no duplicate values will travers to the left)
+                else Node.Left = newNode; // TODO (for no duplicate values will traverse to the left)
             } else {
-                if(res > 0) Node.Right.Tree.Add(value, ref newNode);
-                else Node.Left.Tree.Add(value, ref newNode); // TODO (for no duplicate values will travers to the left)
+                if(res > 0) Node.Right.Tree.Add(value, newNode);
+                else Node.Left.Tree.Add(value, newNode); // TODO (for no duplicate values will traverse to the left)
             }
         }
 

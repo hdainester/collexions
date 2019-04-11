@@ -26,14 +26,16 @@ namespace Chaotx.Collections.Trees {
             // AVL-Trees from adding values into subtrees after
             // the Tree referenced by 'this' has been rotated
             // into lower levels
-            int initDepth = Node == null ? 0 : Node.Depth;
+            int initDepth = Node == null ? -1 : Node.Depth;
             Tree<ValueType, TreeType, NodeType> tree = this;
-
             foreach(var value in values) {
                 tree.Add(value);
-                while(tree.Node.Depth > initDepth)
+                while(tree.Node.Parent != null)
                     tree = tree.Node.Parent.Tree;
             }
+
+            // foreach(var value in values)
+            //     Add(value);
         }
 
         public void Remove(params ValueType[] values) {
