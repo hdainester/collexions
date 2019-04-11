@@ -4,7 +4,8 @@ using System;
 public class TestProgram {
     public static void Main(string[] args) {
         // TestBinaryTree();
-        TestAVLTree();
+        // TestAVLTree();
+        new TestShell().Run();
     }
 
     public static void TestBinaryTree() {
@@ -16,12 +17,12 @@ public class TestProgram {
 
     public static void TestAVLTree() {
         AVLTree<int> at = new AVLTree<int>();
-        // at.Add(1, 2, 3, 4, 5, 6, 7);
+        at.Add(1, 2, 3, 4, 5, 6, 7);
         // at.Add(7, 6, 5, 4, 3, 2, 1);
         // at.Add(3, 1, 2);
         // at.Add(1, 3, 2);
         // at.Add(1, 2, 3, 5, 4);
-        at.Add(3, 4, 5, 1, 2);
+        // at.Add(3, 4, 5, 1, 2);
         Console.WriteLine(at);
     }
 }
