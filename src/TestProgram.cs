@@ -5,7 +5,7 @@ public class TestProgram {
     public static void Main(string[] args) {
         // TestBinaryTree();
         // TestAVLTree();
-        new TestShell().Run();
+        new TestShell().Run(); // 5 7 9 3 2  4
     }
 
     public static void TestBinaryTree() {
