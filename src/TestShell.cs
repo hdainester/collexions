@@ -108,7 +108,7 @@ public class TestShell {
     }
 
     private void PrintTree(TextWriter wt) {
-        wt.WriteLine(Tree);
+        wt.Write(Tree);
         wt.Flush();
     }
 

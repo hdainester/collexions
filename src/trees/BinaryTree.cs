@@ -127,5 +127,27 @@ namespace Chaotx.Collections.Trees {
 
             return Math.Max(maxHeightL, maxHeightR);
         }
+
+        internal void IncHeight() {
+            BinaryTree<T> sib = Node.Parent == null ? null
+                : Node.Parent.Left.Tree == this
+                ? Node.Right.Tree : Node.Left.Tree;
+
+            if(sib != null && sib.Height <= Height)
+                Node.Parent.Tree.IncHeight();
+
+            ++Height;
+        }
+
+        internal void DecHeight() {
+            BinaryTree<T> sib = Node.Parent == null ? null
+                : Node.Parent.Left.Tree == this
+                ? Node.Right.Tree : Node.Left.Tree;
+
+            if(sib != null && sib.Height < Height)
+                Node.Parent.Tree.DecHeight();
+
+            --Height;
+        }
     }
 }
