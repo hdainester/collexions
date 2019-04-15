@@ -32,8 +32,8 @@ public class TestShell {
                     for(int i = 1; i < args.Length; ++i) {
                         Tree.Add(Int32.Parse(args[i]));
 
-                        while(Tree.Node.Parent != null)
-                            Tree = Tree.Node.Parent.Tree as AVLTree<int>;
+                        // while(Tree.Node.Parent != null)
+                        //     Tree = Tree.Node.Parent.Tree as AVLTree<int>;
                     }
 
                     Console.WriteLine(">> value{0} added", args.Length > 2 ? "s" : "");
@@ -51,8 +51,8 @@ public class TestShell {
                     for(int i = 1; i < args.Length; ++i) {
                         Tree.Remove(Int32.Parse(args[i]));
 
-                        while(Tree.Node.Parent != null)
-                            Tree = Tree.Node.Parent.Tree as AVLTree<int>;
+                        // while(Tree.Node.Parent != null)
+                        //     Tree = Tree.Node.Parent.Tree as AVLTree<int>;
                     }
 
                     Console.WriteLine(">> value{0} removed", args.Length > 2 ? "s" : "");

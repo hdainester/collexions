@@ -5,60 +5,14 @@ using System;
 namespace Chaotx.Collections.Trees {
     using Nodes;
 
-    public class BinaryTree<T> : Tree<T, BinaryTree<T>, BinaryTreeNode<T>>
+    public class BinaryTree<T> : Tree<T, BinaryTreeNode<T>>
     where T : struct, System.IComparable<T> {
-        public static readonly BinaryTree<T> EmptyTree = new BinaryTree<T>();
-
-        private BinaryTreeNode<T> node;
-        internal override BinaryTreeNode<T> Node {
-            get => node;
-            set => node = value;
-        }
-
         public BinaryTree(params T[] values) : base(values) {}
 
         public override void Add(T value) {
-            // BinaryTreeNode<T> newNode = null;
-            Add(value, new BinaryTreeNode<T>());
-        }
-
-        internal void Add(T value, BinaryTreeNode<T> newNode) {
-            if(Node == null) {
-                // new BinaryTreeNode<T>(value, this);
-                newNode.Value = value;
-                newNode.Tree = this;
-                Node = newNode;
-                // newNode = node;
-                Height = 1;
-                return;
-            }
-
-            int res = value.CompareTo(Node.Value);
-            if(res > 0 && Node.Right == null || res < 1 && Node.Left == null) {
-                // newNode = new BinaryTreeNode<T>(value);
-                newNode.Value = value;
-                newNode.Parent = Node;
-                newNode.Tree.Height = 1;
-
-                if(Node.Left == null && Node.Right == null) {
-                    // update height of ancestors
-                    BinaryTreeNode<T> ancestor = Node;
-                    while(ancestor != null && (newNode.Depth - ancestor.Depth) >= ancestor.Tree.Height) {
-                        ++ancestor.Tree.Height;
-                        ancestor = ancestor.Parent;
-                    }
-                }
-
-                if(res > 0) Node.Right = newNode;
-                else Node.Left = newNode; // TODO (for no duplicate values will traverse to the left)
-            } else {
-                if(res > 0) Node.Right.Tree.Add(value, newNode);
-                else Node.Left.Tree.Add(value, newNode); // TODO (for no duplicate values will traverse to the left)
-            }
-        }
-
-        public override void Remove(T value) {
-            throw new System.NotImplementedException();
+            if(Node == null)
+                Node = new BinaryTreeNode<T>(value);
+            else base.Add(value);
         }
 
         public override bool Contains(T value) {
@@ -92,11 +46,10 @@ namespace Chaotx.Collections.Trees {
         }
 
         internal static T?[][] ToField(BinaryTree<T> tree) {
-            while(tree.Node.Parent != null) tree = tree.Node.Parent.Tree;
-            T?[][] field = new T?[tree.Height][];
-            int width = (int)Math.Pow(2, tree.Height-1)*2 - 1;
+            T?[][] field = new T?[tree.Node.Height][];
+            int width = (int)Math.Pow(2, tree.Node.Height-1)*2 - 1;
 
-            for(int h = 0; h < tree.Height; ++h)
+            for(int h = 0; h < tree.Node.Height; ++h)
                 field[h] = new T?[width];
 
             FillField(tree, field, field[0].Length/2);
@@ -123,31 +76,9 @@ namespace Chaotx.Collections.Trees {
             if(node.Depth < level) {
                 maxHeightL = GetMaxLevelHeight(node.Left, level);
                 maxHeightR = GetMaxLevelHeight(node.Right, level);
-            } else return node.Tree.Height;
+            } else return node.Height;
 
             return Math.Max(maxHeightL, maxHeightR);
-        }
-
-        internal void IncHeight() {
-            BinaryTree<T> sib = Node.Parent == null ? null
-                : Node.Parent.Left.Tree == this
-                ? Node.Right.Tree : Node.Left.Tree;
-
-            if(sib != null && sib.Height <= Height)
-                Node.Parent.Tree.IncHeight();
-
-            ++Height;
-        }
-
-        internal void DecHeight() {
-            BinaryTree<T> sib = Node.Parent == null ? null
-                : Node.Parent.Left.Tree == this
-                ? Node.Right.Tree : Node.Left.Tree;
-
-            if(sib != null && sib.Height < Height)
-                Node.Parent.Tree.DecHeight();
-
-            --Height;
         }
     }
 }

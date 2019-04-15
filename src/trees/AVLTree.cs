@@ -5,41 +5,48 @@ namespace Chaotx.Collections.Trees {
 
     public class AVLTree<T> : BinaryTree<T> where T : struct, System.IComparable<T> {
         public override void Add(T value) {
-            AVLTreeNode<T> newNode = new AVLTreeNode<T>();
-            base.Add(value, newNode);
+            if(Node == null)
+                base.Add(value);
+            else {
+                BinaryTreeNode<T> newNode = null;
+                Node.Add(value, out newNode);
 
-            BinaryTreeNode<T> top = newNode.Parent;
-            BinaryTreeNode<T> cen = newNode;
-            BinaryTreeNode<T> bot = null;
-            int bal;
+                BinaryTreeNode<T> top = newNode.Parent;
+                BinaryTreeNode<T> cen = newNode;
+                BinaryTreeNode<T> bot = null;
+                int bal;
 
-            while(top != null) {
-                bal = (top.Right == null ? 0: top.Right.Tree.Height)
-                    - (top.Left == null ? 0 : top.Left.Tree.Height);
+                while(top != null) {
+                    bal = (top.Right == null ? 0: top.Right.Height)
+                        - (top.Left == null ? 0 : top.Left.Height);
 
-                if(Math.Abs(bal) == 2) {
-                    if(top.Left == cen) {
-                        if(cen.Left == bot)
-                            RotateRight(top, cen, bot);
-                        else {
-                            RotateLeft(cen, bot, null);
-                            RotateRight(top, bot, cen);
+                    if(Math.Abs(bal) == 2) {
+                        if(top.Left == cen) {
+                            if(cen.Left == bot)
+                                RotateRight(top, cen, bot);
+                            else {
+                                RotateLeft(cen, bot, null);
+                                RotateRight(top, bot, cen);
+                            }
+                        } else {
+                            if(cen.Right == bot)
+                                RotateLeft(top, cen, bot);
+                            else {
+                                RotateRight(cen, bot, null);
+                                RotateLeft(top, bot, cen);
+                            }
                         }
-                    } else {
-                        if(cen.Right == bot)
-                            RotateLeft(top, cen, bot);
-                        else {
-                            RotateRight(cen, bot, null);
-                            RotateLeft(top, bot, cen);
-                        }
+
+                        break;
                     }
 
-                    break;
+                    bot = cen;
+                    cen = top;
+                    top = top.Parent;
                 }
 
-                bot = cen;
-                cen = top;
-                top = top.Parent;
+                while(Node.Parent != null)
+                    Node = Node.Parent;
             }
         }
 
@@ -49,12 +56,12 @@ namespace Chaotx.Collections.Trees {
             BinaryTreeNode<T> bot)
         {
             BinaryTreeNode<T> anc = top.Parent;
-            if(bot == null) cen.Tree.Height = top.Tree.Height;
+            if(bot == null) cen.Height = top.Height;
 
-            int h = top.Tree.Height;
-            top.Tree.Height = Math.Max(
-                top.Left == null ? 0 : top.Left.Tree.Height,
-                cen.Left == null ? 0 : cen.Left.Tree.Height) + 1;
+            int h = top.Height;
+            top.Height = Math.Max(
+                top.Left == null ? 0 : top.Left.Height,
+                cen.Left == null ? 0 : cen.Left.Height) + 1;
 
             top.Right = cen.Left;
             if(cen.Left != null) cen.Left.Parent = top;
@@ -66,9 +73,9 @@ namespace Chaotx.Collections.Trees {
             if(anc != null) {
                 if(anc.Left == top) anc.Left = cen;
                 else anc.Right = cen;
-                h -= cen.Tree.Height;
-                if(h < 0) anc.Tree.IncHeight();
-                else if(h > 0) anc.Tree.DecHeight();
+                h -= cen.Height;
+                if(h < 0) anc.IncHeight();
+                else if(h > 0) anc.DecHeight();
             }
         }
 
@@ -78,12 +85,12 @@ namespace Chaotx.Collections.Trees {
             BinaryTreeNode<T> bot)
         {
             BinaryTreeNode<T> anc = top.Parent;
-            if(bot == null) cen.Tree.Height = top.Tree.Height;
+            if(bot == null) cen.Height = top.Height;
 
-            int h = top.Tree.Height;
-            top.Tree.Height = Math.Max(
-                top.Right == null ? 0 : top.Right.Tree.Height,
-                cen.Right == null ? 0 : cen.Right.Tree.Height) + 1;
+            int h = top.Height;
+            top.Height = Math.Max(
+                top.Right == null ? 0 : top.Right.Height,
+                cen.Right == null ? 0 : cen.Right.Height) + 1;
 
             top.Left = cen.Right;
             if(cen.Right != null) cen.Right.Parent = top;
@@ -95,9 +102,9 @@ namespace Chaotx.Collections.Trees {
             if(anc != null) {
                 if(anc.Left == top) anc.Left = cen;
                 else anc.Right = cen;
-                h -= cen.Tree.Height;
-                if(h < 0) anc.Tree.IncHeight();
-                else if(h > 0) anc.Tree.DecHeight();
+                h -= cen.Height;
+                if(h < 0) anc.IncHeight();
+                else if(h > 0) anc.DecHeight();
             }
         }
     }

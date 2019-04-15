@@ -6,44 +6,37 @@ namespace Chaotx.Collections.Trees {
     using System.Collections;
     using Nodes;
 
-    public abstract class Tree<ValueType, TreeType, NodeType>
-        : ICollection<ValueType>
-        where ValueType : struct, System.IComparable<ValueType>
-        where TreeType : Tree<ValueType, TreeType, NodeType>
-        where NodeType : TreeNode<ValueType, TreeType, NodeType>
+    public abstract class Tree<T, N> : ICollection<T>
+        where T : struct, System.IComparable<T>
+        where N : TreeNode<T, N>
     {
-        internal abstract NodeType Node {get; set;}
-        public int Height {get; internal set;}
-
+        internal N Node {get; set;}
+        public virtual int Height => Node == null ? 0 : Node.Height;
         public int Count => throw new NotImplementedException();
         public bool IsReadOnly => throw new NotImplementedException();
+        
+        public abstract bool Contains(T value);
 
-        public abstract void Add(ValueType value);
-        public abstract void Remove(ValueType value);
-        public abstract bool Contains(ValueType value);
-
-        public Tree(params ValueType[] values) {
+        public Tree(params T[] values) {
             Add(values);
         }
 
-        public void Add(params ValueType[] values) {
-            // TODO: this is a temporary workaround to prevent
-            // AVL-Trees from adding values into subtrees after
-            // the Tree referenced by 'this' has been rotated
-            // into lower levels
-            int initDepth = Node == null ? -1 : Node.Depth;
-            Tree<ValueType, TreeType, NodeType> tree = this;
-            foreach(var value in values) {
-                tree.Add(value);
-                while(tree.Node.Parent != null)
-                    tree = tree.Node.Parent.Tree;
-            }
-
-            // foreach(var value in values)
-            //     Add(value);
+        public virtual void Add(T value) {
+            N newNode = null;
+            Node.Add(value, out newNode);
         }
 
-        public void Remove(params ValueType[] values) {
+        public virtual void Remove(T value) {
+            N oldNode = null;
+            Node.Remove(value, out oldNode);
+        }
+
+        public void Add(params T[] values) {
+            foreach(var value in values)
+                Add(value);
+        }
+
+        public void Remove(params T[] values) {
             foreach(var value in values)
                 Remove(value);
         }
@@ -52,15 +45,15 @@ namespace Chaotx.Collections.Trees {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(ValueType[] array, int arrayIndex) {
+        public void CopyTo(T[] array, int arrayIndex) {
             throw new NotImplementedException();
         }
 
-        bool ICollection<ValueType>.Remove(ValueType item) {
+        bool ICollection<T>.Remove(T item) {
             throw new NotImplementedException();
         }
 
-        public IEnumerator<ValueType> GetEnumerator() {
+        public IEnumerator<T> GetEnumerator() {
             throw new NotImplementedException();
         }
 

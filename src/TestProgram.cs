@@ -12,7 +12,7 @@ public class TestProgram {
         BinaryTree<int> bt = new BinaryTree<int>();
         // bt.Add(5, 3, 6, 1, 2, 4, 7);
         bt.Add(8, 12, 10, 9, 11, 14, 13, 15, 4, 2, 1, 3, 6, 5, 7);
-        Console.WriteLine(bt);
+        Console.Write(bt);
     }
 
     public static void TestAVLTree() {
@@ -23,6 +23,6 @@ public class TestProgram {
         // at.Add(1, 3, 2);
         // at.Add(1, 2, 3, 5, 4);
         // at.Add(3, 4, 5, 1, 2);
-        Console.WriteLine(at);
+        Console.Write(at);
     }
 }

@@ -1,36 +1,22 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Chaotx.Collections.Trees.Nodes {
-    public abstract class TreeNode<ValueType, TreeType, NodeType> : IEnumerable<ValueType>
-        where ValueType : struct, System.IComparable<ValueType>
-        where TreeType : Tree<ValueType, TreeType, NodeType>
-        where NodeType : TreeNode<ValueType, TreeType, NodeType>
+    public abstract class TreeNode<T, N>
+        where T : struct, System.IComparable<T>
+        where N : TreeNode<T, N>
     {
-        public virtual ValueType Value {get; set;}
-        public virtual TreeType Tree {get; set;}
-        public virtual NodeType Parent {get; set;}
-        public abstract int Depth {get;}
+        public virtual T Value {get; set;}
+        public virtual N Parent {get; set;}
+        public virtual int Depth => Parent == null ? 0 : Parent.Depth+1;
+        public int Height {get; internal set;} = 1;
 
-        public TreeNode() : this(default(ValueType)) {}
-        public TreeNode(ValueType value) {
+        internal TreeNode() : this(default(T)) {}
+        internal TreeNode(T value) {
             Value = value;
         }
 
-        public TreeNode(ValueType value, TreeType tree) {
-            Value = value;
-            Tree = tree;
-            Tree.Node = this as NodeType;
-        }
-
-        public IEnumerator<ValueType> GetEnumerator() {
-            // TODO
-            throw new System.NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            // TODO
-            throw new System.NotImplementedException();
-        }
+        public abstract void Add(T value, out N newNode);
+        public abstract void Remove(T value, out N oldNode);
     }
 }
