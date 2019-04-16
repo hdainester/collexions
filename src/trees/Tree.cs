@@ -12,23 +12,24 @@ namespace Chaotx.Collections.Trees {
     {
         internal N Node {get; set;}
         public virtual int Height => Node == null ? 0 : Node.Height;
-        public int Count => throw new NotImplementedException();
-        public bool IsReadOnly => throw new NotImplementedException();
+        public virtual bool IsReadOnly => false;
+        public int Count {get; private set;}
         
-        public abstract bool Contains(T value);
-
         public Tree(params T[] values) {
             Add(values);
         }
 
         public virtual void Add(T value) {
+            ++Count;
             N newNode = null;
             Node.Add(value, out newNode);
         }
 
-        public virtual void Remove(T value) {
+        public virtual bool Remove(T value) {
             N oldNode = null;
             Node.Remove(value, out oldNode);
+            if(oldNode != null) --Count;
+            return oldNode != null;
         }
 
         public void Add(params T[] values) {
@@ -42,23 +43,19 @@ namespace Chaotx.Collections.Trees {
         }
 
         public void Clear() {
-            throw new NotImplementedException();
+            Node = null;
         }
 
         public void CopyTo(T[] array, int arrayIndex) {
-            throw new NotImplementedException();
-        }
-
-        bool ICollection<T>.Remove(T item) {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerator<T> GetEnumerator() {
-            throw new NotImplementedException();
+            foreach(T value in this)
+                array[arrayIndex++] = value;
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
+
+        public abstract bool Contains(T value);
+        public abstract IEnumerator<T> GetEnumerator();
     }
 }

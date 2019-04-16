@@ -29,12 +29,8 @@ public class TestShell {
                     if(args.Length < 2)
                         throw new Exception("missing args");
 
-                    for(int i = 1; i < args.Length; ++i) {
+                    for(int i = 1; i < args.Length; ++i)
                         Tree.Add(Int32.Parse(args[i]));
-
-                        // while(Tree.Node.Parent != null)
-                        //     Tree = Tree.Node.Parent.Tree as AVLTree<int>;
-                    }
 
                     Console.WriteLine(">> value{0} added", args.Length > 2 ? "s" : "");
                 } catch(Exception) {
@@ -48,12 +44,8 @@ public class TestShell {
                     if(args.Length < 2)
                         throw new Exception("missing args");
 
-                    for(int i = 1; i < args.Length; ++i) {
+                    for(int i = 1; i < args.Length; ++i)
                         Tree.Remove(Int32.Parse(args[i]));
-
-                        // while(Tree.Node.Parent != null)
-                        //     Tree = Tree.Node.Parent.Tree as AVLTree<int>;
-                    }
 
                     Console.WriteLine(">> value{0} removed", args.Length > 2 ? "s" : "");
                 } catch(Exception) {
@@ -65,6 +57,28 @@ public class TestShell {
             case "res":
                 Tree = new AVLTree<int>();
                 Console.WriteLine(">> tree has been reset");
+                break;
+
+            case "con":
+                try {
+                    if(Tree.Contains(Int32.Parse(args[1])))
+                        Console.WriteLine(">> Tree contains value {0}", args[1]);
+                    else
+                        Console.WriteLine(">> Tree does not contain value {0}", args[1]);
+                } catch(Exception) {
+                    Console.WriteLine(">> usage: con <number>");
+                }
+
+                break;
+
+            case "trav":
+                bool f = false;
+                foreach(int i in Tree) {
+                    Console.Write("{0}{1}", f ? ", " : "", i);
+                    if(!f) f = true;
+                }
+
+                Console.WriteLine();
                 break;
 
             case "print":
@@ -90,11 +104,13 @@ public class TestShell {
                 break;
 
             case "help":
-                Console.WriteLine(">> [{0, -4}]: Add a <number> to the Tree", "add");
-                Console.WriteLine(">> [{0, -4}]: Remove a <number> from the Tree", "rem");
-                Console.WriteLine(">> [{0, -4}]: Reset the Tree", "res");
-                Console.WriteLine(">> [{0, -4}]: Prints the tree to console or a file", "print");
-                Console.WriteLine(">> [{0, -4}]: Quit the Shell", "quit");
+                Console.WriteLine(">> [{0, -5}]: Add a <number> to the Tree", "add");
+                Console.WriteLine(">> [{0, -5}]: Remove a <number> from the Tree", "rem");
+                Console.WriteLine(">> [{0, -5}]: Reset the Tree", "res");
+                Console.WriteLine(">> [{0, -5}]: Checks wether the tree contains specified value", "con");
+                Console.WriteLine(">> [{0, -5}]: Traverses the tree and prints each value on a single line", "trav");
+                Console.WriteLine(">> [{0, -5}]: Prints the tree to console or a file", "print");
+                Console.WriteLine(">> [{0, -5}]: Quit the Shell", "quit");
                 break;
 
             default:

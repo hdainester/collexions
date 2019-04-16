@@ -10,16 +10,31 @@ namespace Chaotx.Collections.Trees {
         public BinaryTree(params T[] values) : base(values) {}
 
         public override void Add(T value) {
-            if(Node == null)
+            if(Node == null) {
                 Node = new BinaryTreeNode<T>(value);
-            else base.Add(value);
+                Node.Height = 1;
+            } else base.Add(value);
         }
 
         public override bool Contains(T value) {
-            throw new System.NotImplementedException();
+            BinaryTreeNode<T> node = Node;
+            int cmp;
+
+            while(node != null) {
+                cmp = value.CompareTo(node.Value);
+
+                if(cmp < 0)
+                    node = node.Left;
+                else if(cmp > 0)
+                    node = node.Right;
+                else return true;
+            }
+
+            return false;
         }
 
         public override string ToString() {
+            if(Node == null) return "";
             T?[][] field = ToField(this);
             StringBuilder sb = new StringBuilder();
 
@@ -45,7 +60,7 @@ namespace Chaotx.Collections.Trees {
             return sb.ToString();
         }
 
-        internal static T?[][] ToField(BinaryTree<T> tree) {
+        private static T?[][] ToField(BinaryTree<T> tree) {
             T?[][] field = new T?[tree.Node.Height][];
             int width = (int)Math.Pow(2, tree.Node.Height-1)*2 - 1;
 
@@ -79,6 +94,10 @@ namespace Chaotx.Collections.Trees {
             } else return node.Height;
 
             return Math.Max(maxHeightL, maxHeightR);
+        }
+
+        public override IEnumerator<T> GetEnumerator() {
+            return new BinaryTreeEnumerator<T>(this);
         }
     }
 }

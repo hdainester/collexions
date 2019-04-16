@@ -9,7 +9,7 @@ namespace Chaotx.Collections.Trees.Nodes {
         public virtual T Value {get; set;}
         public virtual N Parent {get; set;}
         public virtual int Depth => Parent == null ? 0 : Parent.Depth+1;
-        public int Height {get; internal set;} = 1;
+        public int Height {get; internal set;}
 
         internal TreeNode() : this(default(T)) {}
         internal TreeNode(T value) {

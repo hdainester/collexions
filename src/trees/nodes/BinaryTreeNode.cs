@@ -15,19 +15,10 @@ namespace Chaotx.Collections.Trees.Nodes {
                 newNode = new BinaryTreeNode<T>(value);
                 newNode.Value = value;
                 newNode.Parent = this;
-                newNode.Height = 1;
-
-                if(Left == null && Right == null) {
-                    // update height of ancestors
-                    BinaryTreeNode<T> ancestor = this;
-                    while(ancestor != null && (newNode.Depth - ancestor.Depth) >= ancestor.Height) {
-                        ++ancestor.Height;
-                        ancestor = ancestor.Parent;
-                    }
-                }
 
                 if(res > 0) Right = newNode;
                 else Left = newNode; // TODO (for now duplicate values will traverse to the left)
+                newNode.IncHeight();
             } else {
                 if(res > 0) Right.Add(value, out newNode);
                 else Left.Add(value, out newNode); // TODO (for now duplicate values will traverse to the left)
@@ -39,21 +30,25 @@ namespace Chaotx.Collections.Trees.Nodes {
         }
 
         public void IncHeight() {
-            BinaryTreeNode<T> sib = Parent == null ? null
-                : Parent.Left == this ? Right : Left;
+            if(Parent != null) {
+                BinaryTreeNode<T> sib = Parent.Left == this
+                    ? Parent.Right : Parent.Left;
 
-            if(sib != null && sib.Height <= Height)
-                Parent.IncHeight();
+                if(sib == null || sib.Height <= Height)
+                    Parent.IncHeight();
+            }
 
             ++Height;
         }
 
         public void DecHeight() {
-            BinaryTreeNode<T> sib = Parent == null ? null
-                : Parent.Left == this ? Right : Left;
+            if(Parent != null) {
+                BinaryTreeNode<T> sib = Parent.Left == this
+                    ? Parent.Right : Parent.Left;
 
-            if(sib != null && sib.Height < Height)
-                Parent.DecHeight();
+                if(sib == null || sib.Height < Height)
+                    Parent.DecHeight();
+            }
 
             --Height;
         }
