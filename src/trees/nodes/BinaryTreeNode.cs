@@ -8,8 +8,9 @@ namespace Chaotx.Collections.Trees.Nodes {
         internal BinaryTreeNode(T value) : base(value) {}
 
         public override void Add(T value, out BinaryTreeNode<T> newNode) {
-            newNode = null;
+            newNode = this;
             int res = value.CompareTo(Value);
+            if(res == 0) return;
 
             if(res > 0 && Right == null || res < 1 && Left == null) {
                 newNode = new BinaryTreeNode<T>(value);
@@ -17,11 +18,11 @@ namespace Chaotx.Collections.Trees.Nodes {
                 newNode.Parent = this;
 
                 if(res > 0) Right = newNode;
-                else Left = newNode; // TODO (for now duplicate values will traverse to the left)
+                else Left = newNode;
                 newNode.IncHeight();
             } else {
                 if(res > 0) Right.Add(value, out newNode);
-                else Left.Add(value, out newNode); // TODO (for now duplicate values will traverse to the left)
+                else Left.Add(value, out newNode);
             }
         }
 
