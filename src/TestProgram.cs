@@ -13,13 +13,19 @@ public class TestProgram {
 
     public static void TestBinaryTree() {
         BinaryTree<int> bt = new BinaryTree<int>();
-        bt.Add(8, 12, 10, 9, 11, 14, 13, 15, 4, 2, 1, 3, 6, 5, 7);
+        // bt.Add(8, 12, 10, 9, 11, 14, 13, 15, 4, 2, 1, 3, 6, 5, 7);
+        // bt.Add(4, 2, 1, 3, 6, 5, 7);
+        bt.Add(9, 5, 3, 2, 4, 7, 6, 8, 10, 11);
+        bt.Remove(5);
+        bt.Remove(8);
+        bt.Remove(9);
+        bt.Remove(3);
         Console.Write(bt);
 
-        foreach(int i in bt)
-            Console.Write(i + " ");
+        // foreach(int i in bt)
+        //     Console.Write(i + " ");
 
-        Console.WriteLine();
+        // Console.WriteLine();
     }
 
     public static void TestAVLTree() {

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Chaotx.Collections.Trees.Nodes {
     public class BinaryTreeNode<T> : TreeNode<T, BinaryTreeNode<T>>
     where T : struct, System.IComparable<T> {
@@ -27,7 +29,61 @@ namespace Chaotx.Collections.Trees.Nodes {
         }
 
         public override void Remove(T value, out BinaryTreeNode<T> oldNode) {
-            throw new System.NotImplementedException();
+            Stack<BinaryTreeNode<T>> nodeStack = new Stack<BinaryTreeNode<T>>();
+            nodeStack.Push(this);
+            oldNode = null;
+            int cmp;
+
+            BinaryTreeNode<T> node = this;
+            while(node != null) {
+                cmp = node.Value.CompareTo(value);
+
+                if(cmp > 0)
+                    node = node.Left;
+                else if(cmp < 0)
+                    node = node.Right;
+                else {
+                    RemoveNode(node);
+                    oldNode = node;
+                    return;
+                }
+            }
+        }
+
+        // http://www.mathcs.emory.edu/~cheung/Courses/323/Syllabus/Trees/AVL-delete.html
+        internal static void RemoveNode(BinaryTreeNode<T> node) {
+            BinaryTreeNode<T> anc = node.Parent;
+
+            if(node.Left == null && node.Right == null) {
+                if(anc.Left == node) {
+                    if(anc.Right == null)
+                        anc.DecHeight();
+
+                    anc.Left = null;
+                } else {
+                    if(anc.Left == null)
+                        anc.DecHeight();
+
+                    anc.Right = null;
+                }
+            } else if(node.Left != null && node.Right != null) {
+                BinaryTreeNode<T> pred = node.Right;
+                while(pred.Left != null) pred = pred.Left;
+                node.Value = pred.Value;
+                RemoveNode(pred);
+            } else {
+                if(anc.Left == node) {
+                    if(anc.Left.Height > anc.Left.Height)
+                        anc.DecHeight();
+
+                    anc.Left = node.Left == null ? node.Right : node.Left;
+                } else {
+                    if(anc.Right.Height > anc.Left.Height)
+                        anc.DecHeight();
+
+                    anc.Right = node.Left == null ? node.Right : node.Left;
+                }
+            }
         }
 
         public void IncHeight() {
