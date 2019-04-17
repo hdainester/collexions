@@ -33,6 +33,10 @@ namespace Chaotx.Collections.Trees {
             return false;
         }
 
+        public override IEnumerator<T> GetEnumerator() {
+            return new BinaryTreeEnumerator<T>(this);
+        }
+        
         public override string ToString() {
             if(Node == null) return "";
             T?[][] field = ToField(this);
@@ -94,10 +98,6 @@ namespace Chaotx.Collections.Trees {
             } else return node.Height;
 
             return Math.Max(maxHeightL, maxHeightR);
-        }
-
-        public override IEnumerator<T> GetEnumerator() {
-            return new BinaryTreeEnumerator<T>(this);
         }
     }
 }

@@ -3,9 +3,12 @@ using System;
 
 public class TestProgram {
     public static void Main(string[] args) {
-        // TestBinaryTree();
-        // TestAVLTree();
-        new TestShell().Run(); // 5 7 9 3 2  4
+        TestBinaryTree();
+        
+        for(int i = 0; i < Console.WindowWidth; ++i)
+            Console.Write("-");
+
+        TestAVLTree();
     }
 
     public static void TestBinaryTree() {

@@ -28,8 +28,13 @@ namespace Chaotx.Collections.Trees {
         public virtual bool Remove(T value) {
             N oldNode = null;
             Node.Remove(value, out oldNode);
-            if(oldNode != null) --Count;
-            return oldNode != null;
+            
+            if(oldNode != null) {
+                --Count;
+                return true;
+            }
+
+            return false;
         }
 
         public void Add(params T[] values) {
