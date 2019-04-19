@@ -13,7 +13,7 @@ namespace Chaotx.Collections.Trees {
         internal N Node {get; set;}
         public virtual int Height => Node == null ? 0 : Node.Height;
         public virtual bool IsReadOnly => false;
-        public int Count {get; private set;}
+        public int Count {get; protected set;}
         
         public Tree(params T[] values) {
             Add(values);

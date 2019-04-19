@@ -12,8 +12,11 @@ namespace Chaotx.Collections.Trees.Nodes {
         public int Height {get; internal set;}
 
         internal TreeNode() : this(default(T)) {}
-        internal TreeNode(T value) {
+        internal TreeNode(T value) : this(value, null) {}
+        internal TreeNode(T value, N parent) {
+            Parent = parent;
             Value = value;
+            Height = 1;
         }
 
         public abstract void Add(T value, out N newNode);

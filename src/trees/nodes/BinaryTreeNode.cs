@@ -7,21 +7,19 @@ namespace Chaotx.Collections.Trees.Nodes {
         public BinaryTreeNode<T> Right {get; set;}        
 
         internal BinaryTreeNode() : this(default(T)) {}
-        internal BinaryTreeNode(T value) : base(value) {}
+        internal BinaryTreeNode(T value) : this(value, null) {}
+        internal BinaryTreeNode(T value, BinaryTreeNode<T> parent) : base(value, parent) {}
 
         public override void Add(T value, out BinaryTreeNode<T> newNode) {
             newNode = this;
             int res = value.CompareTo(Value);
             if(res == 0) return;
 
-            if(res > 0 && Right == null || res < 1 && Left == null) {
-                newNode = new BinaryTreeNode<T>(value);
-                newNode.Value = value;
-                newNode.Parent = this;
-
+            if(res > 0 && Right == null || res < 0 && Left == null) {
+                newNode = new BinaryTreeNode<T>(value, this);
                 if(res > 0) Right = newNode;
                 else Left = newNode;
-                newNode.IncHeight();
+                UpdateHeight(this);
             } else {
                 if(res > 0) Right.Add(value, out newNode);
                 else Left.Add(value, out newNode);
@@ -43,71 +41,53 @@ namespace Chaotx.Collections.Trees.Nodes {
                 else if(cmp < 0)
                     node = node.Right;
                 else {
-                    RemoveNode(node);
-                    oldNode = node;
+                    RemoveNode(node, out oldNode);
+                    UpdateHeight(node.Parent);
                     return;
                 }
             }
         }
 
         // http://www.mathcs.emory.edu/~cheung/Courses/323/Syllabus/Trees/AVL-delete.html
-        internal static void RemoveNode(BinaryTreeNode<T> node) {
+        internal static void RemoveNode(BinaryTreeNode<T> node, out BinaryTreeNode<T> oldNode) {
             BinaryTreeNode<T> anc = node.Parent;
-
-            if(node.Left == null && node.Right == null) {
-                if(anc.Left == node) {
-                    if(anc.Right == null)
-                        anc.DecHeight();
-
-                    anc.Left = null;
-                } else {
-                    if(anc.Left == null)
-                        anc.DecHeight();
-
-                    anc.Right = null;
-                }
-            } else if(node.Left != null && node.Right != null) {
+            oldNode = node;
+                
+            if(node.Left != null && node.Right != null) {
                 BinaryTreeNode<T> pred = node.Right;
                 while(pred.Left != null) pred = pred.Left;
                 node.Value = pred.Value;
-                RemoveNode(pred);
+                RemoveNode(pred, out oldNode);
+            } else if(node.Left == null && node.Right == null && anc != null) {
+                if(anc.Left == node)
+                    anc.Left = null;
+                else anc.Right = null;
             } else {
-                if(anc.Left == node) {
-                    if(anc.Left.Height > anc.Left.Height)
-                        anc.DecHeight();
+                if(node.Left != null)
+                    node.Left.Parent = anc;
 
-                    anc.Left = node.Left == null ? node.Right : node.Left;
-                } else {
-                    if(anc.Right.Height > anc.Left.Height)
-                        anc.DecHeight();
-
-                    anc.Right = node.Left == null ? node.Right : node.Left;
+                else if(node.Right != null)
+                    node.Right.Parent = anc;
+                    
+                if(anc != null) {
+                    if(anc.Left == node)
+                        anc.Left = node.Left == null ? node.Right : node.Left;
+                    else 
+                        anc.Right = node.Left == null ? node.Right : node.Left;
                 }
             }
         }
 
-        public void IncHeight() {
-            if(Parent != null) {
-                BinaryTreeNode<T> sib = Parent.Left == this
-                    ? Parent.Right : Parent.Left;
+        internal static void UpdateHeight(BinaryTreeNode<T> node) {
+            if(node == null) return;
+            int oldHeight = node.Height;
 
-                if(sib == null || sib.Height <= Height)
-                    Parent.IncHeight();
-            }
+            node.Height = System.Math.Max(
+                node.Left != null ? node.Left.Height : 0,
+                node.Right != null ? node.Right.Height : 0) + 1;
 
-            ++Height;
-        }
-
-        public void DecHeight() {
-            if(Parent != null) {
-                BinaryTreeNode<T> sib = Parent.Left == this
-                    ? Parent.Right : Parent.Left;
-
-                if(sib == null || sib.Height < Height)
-                    Parent.DecHeight();
-            }
-
-            --Height;
+            if(node.Height != oldHeight)
+                UpdateHeight(node.Parent);
         }
     }
 }
