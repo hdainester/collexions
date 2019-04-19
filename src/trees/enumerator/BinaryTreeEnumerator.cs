@@ -12,14 +12,13 @@ namespace Chaotx.Collections.Trees {
         }
 
         public override bool MoveNext() {
-            if(Node != null) {
-                if(Node.Right != null) nodeStack.Push(Node.Right);
-                if(Node.Left != null) nodeStack.Push(Node.Left);
+            if(nodeStack.Count > 0) {
+                Node = nodeStack.Pop();
+                PushNodes(this, Node.Right);
+                return true;
             }
 
-            bool stackEmpty = nodeStack.Count == 0;
-            if(!stackEmpty) Node = nodeStack.Pop();
-            return !stackEmpty;
+            return false;
         }
 
         public override void Dispose() {
@@ -30,10 +29,14 @@ namespace Chaotx.Collections.Trees {
 
         public override void Reset() {
             nodeStack.Clear();
-            Node = null;
+            PushNodes(this, Tree.Node);
+        }
 
-            if(Tree.Node != null)
-                nodeStack.Push(Tree.Node);
+        private static void PushNodes(BinaryTreeEnumerator<T> it,  BinaryTreeNode<T> node) {
+            while(node != null) {
+                it.nodeStack.Push(node);
+                node = node.Left;
+            }
         }
     }
 }

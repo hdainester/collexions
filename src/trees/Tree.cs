@@ -26,6 +26,8 @@ namespace Chaotx.Collections.Trees {
         }
 
         public virtual bool Remove(T value) {
+            if(Node == null) return false;
+            
             N oldNode = null;
             Node.Remove(value, out oldNode);
             

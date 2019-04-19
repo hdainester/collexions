@@ -36,6 +36,7 @@ namespace Chaotx.Collections.Trees {
         }
 
         public override bool Remove(T value) {
+            if(Node == null) return false;
             BinaryTreeNode<T> oldNode;
             Node.Remove(value, out oldNode);
             if(oldNode == null) return false;
